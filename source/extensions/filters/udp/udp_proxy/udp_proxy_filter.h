@@ -52,6 +52,7 @@ private:
     void write(const Buffer::Instance& buffer);
 
   private:
+    void onIdleTimer();
     void onReadReady();
 
     // Network::UdpPacketProcessor
@@ -68,6 +69,7 @@ private:
     UdpProxyFilter& parent_;
     const Network::UdpRecvData::LocalPeerAddresses addresses_;
     const Upstream::HostConstSharedPtr host_;
+    const Event::TimerPtr idle_timer_;
     const Network::IoHandlePtr io_handle_;
     const Event::FileEventPtr socket_event_;
   };

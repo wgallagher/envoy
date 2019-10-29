@@ -12,6 +12,16 @@ load(
 envoy_package()
 
 envoy_extension_cc_test(
+    name = "udp_proxy_filter_test",
+    srcs = ["udp_proxy_filter_test.cc"],
+    extension_name = "envoy.filters.udp.udp_proxy",
+    deps = [
+        "//source/extensions/filters/udp/udp_proxy:udp_proxy_filter_lib",
+        "//test/mocks/upstream:upstream_mocks",
+    ],
+)
+
+envoy_extension_cc_test(
     name = "udp_proxy_integration_test",
     srcs = ["udp_proxy_integration_test.cc"],
     extension_name = "envoy.filters.udp.udp_proxy",

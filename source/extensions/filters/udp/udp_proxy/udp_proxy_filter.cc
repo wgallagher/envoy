@@ -41,6 +41,8 @@ UdpProxyFilter::ActiveSession::ActiveSession(UdpProxyFilter& parent,
                                              Network::UdpRecvData::LocalPeerAddresses&& addresses,
                                              const Upstream::HostConstSharedPtr& host)
     : parent_(parent), addresses_(std::move(addresses)), host_(host),
+      idle_timer_(parent.read_callbacks_->udpListener().dispatcher().createTimer(
+          [this] { onIdleTimer(); })),
       io_handle_(host->address()->socket(Network::Address::SocketType::Datagram)),
       socket_event_(parent.read_callbacks_->udpListener().dispatcher().createFileEvent(
           io_handle_->fd(), [this](uint32_t) { onReadReady(); }, Event::FileTriggerType::Edge,
@@ -51,6 +53,8 @@ UdpProxyFilter::ActiveSession::ActiveSession(UdpProxyFilter& parent,
   // for this use case or allow the socket option abstractions to work directly against an IO
   // handle.
 }
+
+void UdpProxyFilter::ActiveSession::onIdleTimer() { parent_.sessions_.erase(addresses_); }
 
 void UdpProxyFilter::ActiveSession::onReadReady() {
   // TODO(mattklein123): Refresh idle timer.
